@@ -39,10 +39,21 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
+  const waitForTron = () => new Promise(resolve => {
+    const check = () => {
       if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-        setTronWeb(window.tronWeb);
-        setAccount(window.tronWeb.defaultAddress.base58);
-        setIsLoading(false);
+        resolve(window.tronWeb);
+      } else {
+        setTimeout(check, 250);
+      }
+    };
+    check();
+  });
+
+  const tw = await waitForTron();
+  setTronWeb(tw);
+  setAccount(tw.defaultAddress.base58);
+  setIsLoading(false);
       } else {
         const interval = setInterval(() => {
           if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
@@ -169,12 +180,12 @@ function App() {
   <p><strong>{t("amount")}:</strong> {Number(tx.value) / 10 ** decimals} {tokenSymbol}</p>
   <p><a className="tx-link" href={`https://${network === 'mainnet' ? 'tronscan.org' : 'shasta.tronscan.org'}/#/transaction/${tx.transaction_id}`} target="_blank" rel="noopener noreferrer">🔗 {t("details")}</a></p>
   <button
-  className="tiny-button"
-  onClick={async () => {
-    const shareText = `${t("summary")}: ${tx.from === account ? t("outgoing") : t("incoming")}, ${t("amount")}: ${Number(tx.value) / 10 ** decimals} ${tokenSymbol}
+    className="tiny-button"
+    onClick={() => {
+      const shareText = `${t("summary")}: ${tx.from === account ? t("outgoing") : t("incoming")}, ${t("amount")}: ${Number(tx.value) / 10 ** decimals} ${tokenSymbol}
 ${t("details")}: https://${network === 'mainnet' ? 'tronscan.org' : 'shasta.tronscan.org'}/#/transaction/${tx.transaction_id}`;
-    if (navigator.share) {
-      try {
+      if (navigator.share) {
+        try {
         await navigator.share({ title: 'LIRENA Transaction', text: shareText });
       } catch (err) {
         if (err.name !== 'AbortError') {
@@ -182,15 +193,12 @@ ${t("details")}: https://${network === 'mainnet' ? 'tronscan.org' : 'shasta.tron
           console.error(err);
         }
       }
-    } else {
-      navigator.clipboard.writeText(shareText);
-      toast.success(t("copied"));
-    }
-  }}
->
-  📤 {t("share")}
-</button>
-
+      } else {
+        navigator.clipboard.writeText(shareText);
+        toast.success(t("copied"));
+      }
+    }}
+  >📤 {t("share")}</button>
 </li>
             ))}
           </ul>
