@@ -54,17 +54,7 @@ function App() {
   setTronWeb(tw);
   setAccount(tw.defaultAddress.base58);
   setIsLoading(false);
-      } else {
-        const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            setTronWeb(window.tronWeb);
-            setAccount(window.tronWeb.defaultAddress.base58);
-            setIsLoading(false);
-            clearInterval(interval);
-          }
-        }, 500);
-      }
-    };
+};
     init();
   }, []);
 
