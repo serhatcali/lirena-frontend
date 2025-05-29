@@ -35,21 +35,39 @@ function App() {
   const [theme, setTheme] = useState("dark");
   const [network, setNetwork] = useState("shasta");
 
-  useEffect(() => { document.body.className = theme; }, [theme]);
-
   useEffect(() => {
-    const init = async () => {
-      const waitForTron = () =>
-        new Promise(resolve => {
-          const check = () => {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-              resolve(window.tronWeb);
-            } else {
-              setTimeout(check, 300);
-            }
-          };
-          check();
-        });
+  const waitForTron = () => new Promise(resolve => {
+    const check = () => {
+      if (
+        window.tronWeb &&
+        window.tronWeb.ready &&
+        window.tronWeb.defaultAddress &&
+        window.tronWeb.defaultAddress.base58 &&
+        window.tronWeb.defaultAddress.base58.startsWith("T")
+      ) {
+        resolve(window.tronWeb);
+      } else {
+        setTimeout(check, 400);
+      }
+    };
+    check();
+  });
+
+  const init = async () => {
+    const tw = await waitForTron();
+    setTronWeb(tw);
+    setAccount(tw.defaultAddress.base58);
+    setIsLoading(false);
+  };
+
+  init();
+
+  window.addEventListener("message", (e) => {
+    if (e.data && typeof e.data === "object" && "isTronLink" in e.data) {
+      init();
+    }
+  });
+}, []);
 
       const tw = await waitForTron();
       setTronWeb(tw);
