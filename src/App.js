@@ -35,6 +35,8 @@ function App() {
   const [theme, setTheme] = useState("dark");
   const [network, setNetwork] = useState("shasta");
 
+  useEffect(() => { document.body.className = theme; }, [theme]);
+
   useEffect(() => {
     const waitForTron = () => new Promise(resolve => {
       const check = () => {
@@ -53,14 +55,12 @@ function App() {
       check();
     });
 
-    const init = async () => {
+    (async () => {
       const tw = await waitForTron();
       setTronWeb(tw);
       setAccount(tw.defaultAddress.base58);
       setIsLoading(false);
-    };
-
-    init();
+    })();
   }, []);
 
   useEffect(() => {
