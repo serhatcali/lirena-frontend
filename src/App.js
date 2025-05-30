@@ -55,12 +55,11 @@ function App() {
       check();
     });
 
-    (async () => {
-      const tw = await waitForTron();
+    waitForTron().then(tw => {
       setTronWeb(tw);
       setAccount(tw.defaultAddress.base58);
       setIsLoading(false);
-    })();
+    });
   }, []);
 
   useEffect(() => {
