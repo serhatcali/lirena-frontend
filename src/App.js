@@ -53,6 +53,22 @@ function App() {
     check();
   });
 
+  const init = async () => {
+    const tw = await waitForTron();
+    setTronWeb(tw);
+    setAccount(tw.defaultAddress.base58);
+    setIsLoading(false);
+  };
+
+  init();
+
+  window.addEventListener("message", (e) => {
+    if (e.data && typeof e.data === "object" && "isTronLink" in e.data) {
+      init();
+    }
+  });
+}, []);
+
   
 
     init();
