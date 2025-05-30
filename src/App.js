@@ -53,14 +53,7 @@ function App() {
     check();
   });
 
-  const init = async () => {
-    
-
-      const tw = await waitForTron();
-      setTronWeb(tw);
-      setAccount(tw.defaultAddress.base58);
-      setIsLoading(false);
-    };
+  
 
     init();
 
