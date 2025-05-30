@@ -36,48 +36,31 @@ function App() {
   const [network, setNetwork] = useState("shasta");
 
   useEffect(() => {
-  const waitForTron = () => new Promise(resolve => {
-    const check = () => {
-      if (
-        window.tronWeb &&
-        window.tronWeb.ready &&
-        window.tronWeb.defaultAddress &&
-        window.tronWeb.defaultAddress.base58 &&
-        window.tronWeb.defaultAddress.base58.startsWith("T")
-      ) {
-        resolve(window.tronWeb);
-      } else {
-        setTimeout(check, 400);
-      }
+    const waitForTron = () => new Promise(resolve => {
+      const check = () => {
+        if (
+          window.tronWeb &&
+          window.tronWeb.ready &&
+          window.tronWeb.defaultAddress &&
+          window.tronWeb.defaultAddress.base58 &&
+          window.tronWeb.defaultAddress.base58.startsWith("T")
+        ) {
+          resolve(window.tronWeb);
+        } else {
+          setTimeout(check, 400);
+        }
+      };
+      check();
+    });
+
+    const init = async () => {
+      const tw = await waitForTron();
+      setTronWeb(tw);
+      setAccount(tw.defaultAddress.base58);
+      setIsLoading(false);
     };
-    check();
-  });
-
-  const init = async () => {
-    const tw = await waitForTron();
-    setTronWeb(tw);
-    setAccount(tw.defaultAddress.base58);
-    setIsLoading(false);
-  };
-
-  init();
-
-  window.addEventListener("message", (e) => {
-    if (e.data && typeof e.data === "object" && "isTronLink" in e.data) {
-      init();
-    }
-  });
-}, []);
-
-  
 
     init();
-
-    window.addEventListener("message", (e) => {
-      if (e.data && typeof e.data === "object" && "isTronLink" in e.data) {
-        init();
-      }
-    });
   }, []);
 
   useEffect(() => {
